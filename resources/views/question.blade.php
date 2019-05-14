@@ -44,7 +44,7 @@
                                 <div class="card-footer">
 
                                     <a class="btn btn-warning float-left">
-                                        <button onclick="actOnAnswer(event);" style="background-color:transparent;border:none;" data-answer-id="{{ $answer->id }}">Like</button>
+                                        <button type="button" id="like-btn-{{ $answer->id }}" onclick="actOnAnswer(event);" style="background-color:transparent;border:none;" data-answer-id="{{ $answer->id }}">Like</button>
                                         <span id="likes-count-{{ $answer->id }}">{{ $answer->likes_count }}</span>
                                     </a>
 
@@ -67,4 +67,38 @@
             </div>
         </div>
     </div>
+@endsection
+
+@section('js')
+    <script>
+        var updateAnswerStats = {
+            Like: function (answerId) {
+                document.querySelector('#likes-count-' + answerId).textContent++;
+            },
+
+            Unlike: function(answerId) {
+                document.querySelector('#likes-count-' + answerId).textContent--;
+            }
+        };
+
+        var toggleButtonText = {
+            Like: function(button) {
+                button.textContent = "Unlike";
+            },
+
+            Unlike: function(button) {
+                button.textContent = "Like";
+            }
+        };
+
+        var actOnAnswer = function (event) {
+            var answerId = event.target.dataset.answerId;
+            var action = event.target.textContent;
+            toggleButtonText[action](event.target);
+            updateAnswerStats[action](answerId);
+            axios.post('/answer/' + answerId + '/act',
+                { action: action });
+        };
+
+    </script>
 @endsection
