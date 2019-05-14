@@ -7,7 +7,8 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 
-trait UploadTrait
+
+trait UploadTrait1
 {
     public function uploadOne(UploadedFile $uploadedFile, $folder = null, $disk = 'public', $filename = null)
     {
@@ -19,14 +20,14 @@ trait UploadTrait
     }
 }
 
-class answerTest extends TestCase
+class questionTest extends TestCase
 {
     /**
      * A basic feature test example.
      *
      * @return void
      */
-    use UploadTrait;
+    use UploadTrait1;
 
     public function testUpload()
     {
@@ -34,19 +35,16 @@ class answerTest extends TestCase
         $user->save();
         $question = factory(\App\Question::class)->make();
         $question->user()->associate($user);
-        $question->save();
-        $answer = factory(\App\Answer::class)->make();
-        $answer->user()->associate($user);
-        $answer->question()->associate($question);
 
-        $name = $answer->user_id . '_' . $answer->question_id . '_' . time();
+        $name = $question->user_id . '_' . time();
         $image = UploadedFile::fake()->image($name);
-        $folder = '/uploads/answers/';
+        $folder = '/uploads/questions/';
         $this->uploadOne($image, $folder, 'public', $name);
         $filePath = 'storage/app/public' . $folder . $name;
-        $answer->image = $filePath;
-        $answer->save();
+        $question->image = $filePath;
+        $question->save();
 
         $this->assertFileExists($filePath . '.jpg');
+
     }
 }

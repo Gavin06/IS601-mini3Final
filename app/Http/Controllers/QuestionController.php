@@ -7,9 +7,12 @@ use App\Question;
 use App\Answer;
 use Illuminate\Support\Facades\Auth;
 use App\Events\AnswerAction;
+use App\Traits\UploadTrait;
 
 class QuestionController extends Controller
 {
+    use UploadTrait;
+
     /**
      * Display a listing of the resource.
      *
@@ -46,18 +49,33 @@ class QuestionController extends Controller
      */
     public function store(Request $request)
     {
-        $input = $request->validate([
+        $request->validate([
             'body' => 'required|min:5',
+            'image.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
         ], [
             'body.required' => 'Body is required',
             'body.min' => 'Body must be at least 5 characters',
+            'image.image' => 'The image must be an image.',
+            'image.mimes' => 'file type must be jpeg, png, jpg, or gif',
+            'image.max' => 'file size  must be less than  2 MB',
         ]);
         $input = request()->all();
         $question = new Question($input);
         $question->user()->associate(Auth::user());
+
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $name = $question->user_id . '_' . time();
+            $folder = '/uploads/questions/';
+            $filePath = 'https://s3.' . env('AWS_DEFAULT_REGION') . '.amazonaws.com/' . env('AWS_BUCKET') . $folder . $name . '.' . $image->getClientOriginalExtension();
+            $this->uploadOne($image, $folder, 's3', $name);
+            $question->image = $filePath;
+        }
+
         $question->save();
 
         return redirect()->route('home')->with('message', 'A question has been created successfully!!');
+
     }
 
 
