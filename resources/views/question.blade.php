@@ -3,7 +3,7 @@
 @section('content')
     <div class="container">
         <div class="row ">
-            <div class="col-md-8">
+            <div class="col-md-12">
                 <div class="card">
                     <div class="card-header">Question</div>
 
@@ -25,7 +25,7 @@
                 </div>
             </div>
 
-            <div class="col-md-4">
+            <div class="col-md-12">
                 <div class="card">
                     <div class="card-header"><a class="btn btn-primary float-left"
                                                 href="{{ route('answers.create', ['question_id'=> $question->id])}}">
@@ -33,10 +33,20 @@
                         </a></div>
 
                     <div class="card-body">
-                        @forelse($question->answers as $answer)
+                        @forelse($answers as $answer)
                             <div class="card">
+                                <div>By
+                                    <b>{{ $answer->user->email}}</b>
+                                    on
+                                    <small>{{ $answer->created_at }}</small>
+                                </div>
                                 <div class="card-body">{{$answer->body}}</div>
                                 <div class="card-footer">
+
+                                    <a class="btn btn-warning float-left">
+                                        <button onclick="actOnAnswer(event);" style="background-color:transparent;border:none;" data-answer-id="{{ $answer->id }}">Like</button>
+                                        <span id="likes-count-{{ $answer->id }}">{{ $answer->likes_count }}</span>
+                                    </a>
 
                                     <a class="btn btn-primary float-right"
                                        href="{{ route('answers.show', ['question_id'=> $question->id,'answer_id' => $answer->id]) }}">
@@ -47,7 +57,6 @@
                             </div>
                         @empty
                             <div class="card">
-
                                 <div class="card-body"> No Answers</div>
                             </div>
                         @endforelse
@@ -56,4 +65,6 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
 @endsection
