@@ -142,4 +142,23 @@ class QuestionController extends Controller
         return '';
     }
 
+    public function sortByTime($question)
+    {
+        $question = Question::find($question);
+        $answers = $question->answers()
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('sortByTime', ['answers' => $answers, 'question' => $question]);
+    }
+
+    public function sortByLike($question)
+    {
+        $question = Question::find($question);
+        $answers = $question->answers()
+            ->orderBy('likes_count', 'desc')
+            ->get();
+
+        return view('sortByLike', ['answers' => $answers, 'question' => $question]);
+    }
 }

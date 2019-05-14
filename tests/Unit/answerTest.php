@@ -6,6 +6,7 @@ use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Events\AnswerAction;
+use App\Answer;
 
 class answerTest extends TestCase
 {
@@ -50,4 +51,16 @@ class answerTest extends TestCase
         $this->assertTrue($newLikes_count == $answer->likes_count +1);
     }
 
+    public function testLikes_CountProperty()
+    {
+        $user = factory(\App\User::class)->make();
+        $user->save();
+        $question = factory(\App\Question::class)->make();
+        $question->user()->associate($user);
+        $question->save();
+        $answer = factory(\App\Answer::class)->make();
+        $answer->user()->associate($user);
+        $answer->question()->associate($question);
+        $this->assertIsInt($answer->likes_count);
+    }
 }
