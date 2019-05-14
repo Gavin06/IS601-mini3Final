@@ -19,6 +19,7 @@ class CreateAnswersTable extends Migration
             $table->integer('question_id');
             $table->longText('body');
             $table->integer('likes_count')->default(0);
+            $table->string('image')->nullable();
             $table->timestamps();
         });
     }
